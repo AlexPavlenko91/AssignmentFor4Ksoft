@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">AssignmentFor4Ksoft</string>
+
+    <!-- Errors -->
+    <string name="error_email_blank">Email не може бути пустим</string>
+    <string name="error_email_invalid">Введене значення email - невалідне</string>
+    <string name="error_email_short">Email має містити щонайменше %d символів</string>
+    <string name="error_password_blank">Пароль не може бути пустим</string>
+    <string name="error_password_short">Пароль має містити щонайменше %d символів</string>
+
+    <string name="remember_user">Запам\'ятати введені дані</string>
+    <string name="submit">Підтвердити</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
 </resources>
