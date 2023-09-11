@@ -5,7 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alex.assignmentfor4ksoft.core.domain.preferences.DefaultPreferences
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.AuthorizationUseCases
+import com.alex.assignmentfor4ksoft.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,13 +16,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthorizationViewModel @Inject constructor(
-    private val authorizationUseCases: AuthorizationUseCases
+    private val authorizationUseCases: AuthorizationUseCases,
+    private val preferences: DefaultPreferences,
 ) : ViewModel() {
 
     var state by mutableStateOf(AuthorizationState())
 
-    private val validationEventChannel = Channel<ValidationEvent>()
-    val validationEvents = validationEventChannel.receiveAsFlow()  // use shared flow if there are multiple observers
+    private val validationEventChannel = Channel<UiEvent>()
+    val validationEvents = validationEventChannel.receiveAsFlow()
 
     fun onEvent(event: AuthorizationEvent) {
         when (event) {
@@ -58,12 +61,16 @@ class AuthorizationViewModel @Inject constructor(
             )
             return
         }
+
         viewModelScope.launch {
-            validationEventChannel.send(ValidationEvent.Success)
+            if (state.shouldRemember){
+                preferences.saveIsRememberedUser(state.shouldRemember)
+            }
+            validationEventChannel.send(UiEvent.Success)
         }
     }
-
+/*
     sealed class ValidationEvent{
         data object Success: ValidationEvent()
-    }
+    }*/
 }

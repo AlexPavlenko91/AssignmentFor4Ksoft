@@ -3,8 +3,8 @@ package com.alex.assignmentfor4ksoft.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import com.alex.assignmentfor4ksoft.authorization.data.preferences.AuthorizationPreferences
-import com.alex.assignmentfor4ksoft.authorization.data.preferences.AuthorizationPreferencesImpl
+import com.alex.assignmentfor4ksoft.core.domain.preferences.DefaultPreferences
+import com.alex.assignmentfor4ksoft.core.data.preferences.DefaultPreferencesImpl
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.AuthorizationUseCases
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.ValidateEmail
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.ValidatePassword
@@ -28,8 +28,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePreferences(sharedPreferences: SharedPreferences): AuthorizationPreferences {
-        return AuthorizationPreferencesImpl(sharedPreferences)
+    fun providePreferences(sharedPreferences: SharedPreferences): DefaultPreferences {
+        return DefaultPreferencesImpl(sharedPreferences)
     }
 
     @Provides
