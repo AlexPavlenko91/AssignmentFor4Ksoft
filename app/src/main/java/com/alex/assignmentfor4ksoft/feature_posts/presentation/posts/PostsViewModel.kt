@@ -1,4 +1,4 @@
-package com.alex.assignmentfor4ksoft.feature_posts.presentation
+package com.alex.assignmentfor4ksoft.feature_posts.presentation.posts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,7 +23,7 @@ class PostsViewModel @Inject constructor(
             is PostsEvent.OnLogoutClick -> {
                 preferences.saveIsRememberedUser(shouldRemember = false)
                 viewModelScope.launch {
-                    _uiEvent.send(UiEvent.NavigateTo)
+                    _uiEvent.send(UiEvent.NavigateToLogin)
                 }
             }
         }

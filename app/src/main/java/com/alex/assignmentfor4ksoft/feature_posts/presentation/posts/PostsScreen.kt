@@ -1,8 +1,6 @@
-package com.alex.assignmentfor4ksoft.feature_posts.presentation
+package com.alex.assignmentfor4ksoft.feature_posts.presentation.posts
 
 import android.view.LayoutInflater
-import android.widget.Toast
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,14 +10,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.recyclerview.widget.RecyclerView
 import com.alex.assignmentfor4ksoft.R
+import com.alex.assignmentfor4ksoft.databinding.PostsFragmentBinding
+import com.alex.assignmentfor4ksoft.feature_posts.domain.entities.PostItem
 import com.alex.assignmentfor4ksoft.utils.UiEvent
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PostsScreen(
-    onNavigateTo: () -> Unit,
+    navigateToLogin: () -> Unit,
+    navigateToAddEditScreen: () -> Unit,
     viewModel: PostsViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -34,31 +36,37 @@ fun PostsScreen(
                     )
                     keyboardController?.hide()
                 }
-                is UiEvent.NavigateTo -> onNavigateTo()
+
+                is UiEvent.NavigateToLogin -> navigateToLogin()
                 else -> Unit
             }
         }
     }
     AndroidView(
         factory = { viewContext ->
-            val view = LayoutInflater.from(viewContext).inflate(R.layout.posts_fragment, null, false)
-            val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+            val binding = PostsFragmentBinding.inflate(LayoutInflater.from(viewContext))
 
-            toolbar.setOnMenuItemClickListener {
-                when(it.itemId){
+            binding.toolbarPosts.setOnMenuItemClickListener {
+                when (it.itemId) {
                     R.id.logoutMenu -> {
                         viewModel.onEvent(PostsEvent.OnLogoutClick)
-                        Toast.makeText(context, "TTTTTTTTTTTT", Toast.LENGTH_SHORT).show()
-                        onNavigateTo.invoke()
-                    true
+                        true
                     }
+
                     else -> false
                 }
             }
-            view
-        },
-        update = { view ->
 
+                initPostsAdapter(binding.rvPosts, emptyList())
+            binding.fabPosts.setOnClickListener {
+                navigateToAddEditScreen.invoke()
+            }
+            binding.root
         }
     )
+}
+
+fun initPostsAdapter(rv: RecyclerView, posts: List<PostItem>) {
+    val postsAdapter = PostsAdapter(posts)
+    rv.adapter = postsAdapter
 }
