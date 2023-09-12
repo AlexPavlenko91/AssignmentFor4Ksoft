@@ -14,11 +14,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.alex.assignmentfor4ksoft.R
 import com.alex.assignmentfor4ksoft.utils.Screen
+import com.alex.assignmentfor4ksoft.utils.UiEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,12 +47,19 @@ fun AuthorizationScreen(
     ) {
         val state = viewModel.state
         val context = LocalContext.current
+        val snackbarHostState = remember { SnackbarHostState() }
         LaunchedEffect(key1 = context) {
             viewModel.validationEvents.collect { event ->
                 when (event) {
-                    is AuthorizationViewModel.ValidationEvent.Success -> {
+                    is UiEvent.Success -> {
                         navController.navigate(Screen.PostsScreen.route)
                     }
+                    is UiEvent.ShowSnackbar -> {
+                        snackbarHostState.showSnackbar(
+                            message = event.message.asString(context)
+                        )
+                    }
+                    else -> Unit
                 }
 
             }
@@ -121,12 +131,6 @@ fun AuthorizationScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = stringResource(R.string.remember_user))
             }
-           /* if (state.termsError != null) {
-                Text(
-                    text = state.termsError.asString(),
-                    color = MaterialTheme.colorScheme.error
-                )
-            }*/
 
             Button(
                 onClick = { viewModel.onEvent(AuthorizationEvent.Submit) },

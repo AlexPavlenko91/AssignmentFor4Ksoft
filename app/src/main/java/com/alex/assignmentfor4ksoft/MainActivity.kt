@@ -11,13 +11,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.alex.assignmentfor4ksoft.authorization.presentation.AuthorizationScreen
+import com.alex.assignmentfor4ksoft.core.domain.preferences.DefaultPreferences
 import com.alex.assignmentfor4ksoft.feature_posts.presentation.PostsScreen
 import com.alex.assignmentfor4ksoft.ui.theme.AssignmentFor4KsoftTheme
 import com.alex.assignmentfor4ksoft.utils.Screen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var preferences: DefaultPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,15 +34,18 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+                    val isRememberedUserInfo = preferences.loadIsRememberedUser()
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.AuthorizationScreen.route
+                        startDestination = if (isRememberedUserInfo) Screen.PostsScreen.route else Screen.AuthorizationScreen.route
                     ) {
                         composable(route = Screen.AuthorizationScreen.route) {
                             AuthorizationScreen(navController = navController)
                         }
                         composable(route = Screen.PostsScreen.route) {
-                            PostsScreen()
+                            PostsScreen(
+                                onNavigateTo = { navController.navigate(Screen.AuthorizationScreen.route) }
+                            )
                         }
                     }
                 }

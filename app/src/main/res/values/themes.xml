@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.AssignmentFor4Ksoft" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="OverflowMenu" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="android:windowDisablePreview">true</item>
+        <item name="overlapAnchor">false</item>
+        <item name="android:dropDownVerticalOffset">5.0dp</item>
+    </style>
 </resources>
