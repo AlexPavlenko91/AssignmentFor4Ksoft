@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.alex.assignmentfor4ksoft.R
 import com.alex.assignmentfor4ksoft.feature_posts.domain.entities.InvalidPostException
 import com.alex.assignmentfor4ksoft.feature_posts.domain.entities.PostItem
-import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.PostUseCases
+import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddEditPostUseCases
 import com.alex.assignmentfor4ksoft.utils.UiEvent
 import com.alex.assignmentfor4ksoft.utils.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditPostViewModel @Inject constructor(
-    private val postUseCases: PostUseCases,
+    private val addEditPostUseCases: AddEditPostUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -30,25 +30,26 @@ class AddEditPostViewModel @Inject constructor(
     )
     val postComment: State<PostTextFieldState> = _postComment
 
-    private val _noteColor = mutableIntStateOf(PostItem.postColors.random().toArgb())
-    val noteColor: State<Int> = _noteColor
+    private val _postColor = mutableIntStateOf(PostItem.postColors.random().toArgb())
+    val postColor: State<Int> = _postColor
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var currentNoteId: Int? = null
+    private var currentPostId: Int? = null
+
 
     init {
-        savedStateHandle.get<Int>("noteId")?.let { noteId ->
-            if (noteId != -1) {
+        savedStateHandle.get<Int>("postId")?.let { postId ->
+            if (postId != -1) {
                 viewModelScope.launch {
-                    postUseCases.getPost(noteId)?.also { post ->
-                        currentNoteId = post.id
+                    addEditPostUseCases.getPost(postId)?.also { post ->
+                        currentPostId = post.id
                         _postComment.value = _postComment.value.copy(
                             text = UiText.DynamicString(post.comment).value,
                             isHintVisible = false
                         )
-                        _noteColor.intValue = post.color
+                        _postColor.intValue = post.color
                     }
                 }
             }
@@ -71,19 +72,19 @@ class AddEditPostViewModel @Inject constructor(
             }
 
             is AddEditPostEvent.ChangeColor -> {
-                _noteColor.intValue = event.color
+                _postColor.intValue = event.color
             }
 
             is AddEditPostEvent.SavePost -> {
                 viewModelScope.launch {
                     try {
-                        postUseCases.addPost(
+                        addEditPostUseCases.addPost(
                             PostItem(
                                 comment = postComment.value.text,
                                 dateTime = System.currentTimeMillis(),
-                                color = noteColor.value,
+                                color = postColor.value,
                                 imageUrl = "https://picsum.photos/id/3/5000/3333",
-                                id = currentNoteId
+                                id = currentPostId
                             )
                         )
                         _eventFlow.emit(UiEvent.SavePost)
@@ -99,4 +100,6 @@ class AddEditPostViewModel @Inject constructor(
             }
         }
     }
+
+
 }

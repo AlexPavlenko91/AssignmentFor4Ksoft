@@ -47,8 +47,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.PostsScreen.route) {
                             PostsScreen(
-                                navigateToLogin = { navController.navigate(Screen.AuthorizationScreen.route) },
-                                navigateToAddEditScreen = { navController.navigate(Screen.AddEditPostScreen.route) },
+                                navController = navController,
                             )
                         }
                         composable(

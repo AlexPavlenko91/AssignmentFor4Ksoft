@@ -5,9 +5,25 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,6 +45,7 @@ import com.alex.assignmentfor4ksoft.utils.UiText
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditPostScreen(
     navController: NavController,
@@ -39,7 +56,7 @@ fun AddEditPostScreen(
 
     val noteBackgroundAnimatable = remember {
         Animatable(
-            Color(if (postColor != -1) postColor else viewModel.noteColor.value)
+            Color(if (postColor != -1) postColor else viewModel.postColor.value)
         )
     }
     val scope = rememberCoroutineScope()
@@ -57,65 +74,77 @@ fun AddEditPostScreen(
                 is UiEvent.SavePost -> {
                     navController.navigateUp()
                 }
+
                 else -> Unit
             }
         }
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(noteBackgroundAnimatable.value)
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            PostItem.postColors.forEach { color ->
-                val colorInt = color.toArgb()
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .shadow(15.dp, CircleShape)
-                        .clip(CircleShape)
-                        .background(color)
-                        .border(
-                            width = 3.dp,
-                            color = if (viewModel.noteColor.value == colorInt) {
-                                Color.Black
-                            } else Color.Transparent,
-                            shape = CircleShape
-                        )
-                        .clickable {
-                            scope.launch {
-                                noteBackgroundAnimatable.animateTo(
-                                    targetValue = Color(colorInt),
-                                    animationSpec = tween(
-                                        durationMillis = 500
-                                    )
-                                )
-                            }
-                            viewModel.onEvent(AddEditPostEvent.ChangeColor(colorInt))
-                        }
-                )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    viewModel.onEvent(AddEditPostEvent.SavePost)
+                },
+            ) {
+                Icon(imageVector = Icons.Default.Save, contentDescription = "Save note")
             }
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(noteBackgroundAnimatable.value)
+                .padding(innerPadding)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                PostItem.postColors.forEach { color ->
+                    val colorInt = color.toArgb()
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .shadow(15.dp, CircleShape)
+                            .clip(CircleShape)
+                            .background(color)
+                            .border(
+                                width = 3.dp,
+                                color = if (viewModel.postColor.value == colorInt) {
+                                    Color.Black
+                                } else Color.Transparent,
+                                shape = CircleShape
+                            )
+                            .clickable {
+                                scope.launch {
+                                    noteBackgroundAnimatable.animateTo(
+                                        targetValue = Color(colorInt),
+                                        animationSpec = tween(
+                                            durationMillis = 500
+                                        )
+                                    )
+                                }
+                                viewModel.onEvent(AddEditPostEvent.ChangeColor(colorInt))
+                            }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            TransparentHintTextField(
+                text = contentState.text,
+                hint = UiText.StringResource(R.string.post_comment_hint).asString(),
+                onValueChange = {
+                    viewModel.onEvent(AddEditPostEvent.EnteredComment(it))
+                },
+                onFocusChange = {
+                    viewModel.onEvent(AddEditPostEvent.ChangeCommentFocus(it))
+                },
+                isHintVisible = contentState.isHintVisible,
+                textStyle = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxHeight()
+            )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        TransparentHintTextField(
-            text = contentState.text,
-            hint = UiText.StringResource(R.string.post_comment_hint).asString(),
-            onValueChange = {
-                viewModel.onEvent(AddEditPostEvent.EnteredComment(it))
-            },
-            onFocusChange = {
-                viewModel.onEvent(AddEditPostEvent.ChangeCommentFocus(it))
-            },
-            isHintVisible = contentState.isHintVisible,
-            textStyle = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.fillMaxHeight()
-        )
     }
 }

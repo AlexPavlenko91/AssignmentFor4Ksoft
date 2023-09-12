@@ -4,19 +4,20 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
-import com.alex.assignmentfor4ksoft.core.domain.preferences.DefaultPreferences
-import com.alex.assignmentfor4ksoft.core.data.preferences.DefaultPreferencesImpl
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.AuthorizationUseCases
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.ValidateEmail
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.ValidatePassword
+import com.alex.assignmentfor4ksoft.core.data.preferences.DefaultPreferencesImpl
+import com.alex.assignmentfor4ksoft.core.domain.preferences.DefaultPreferences
 import com.alex.assignmentfor4ksoft.feature_posts.data.data_source.PostDatabase
 import com.alex.assignmentfor4ksoft.feature_posts.data.repository.PostRepositoryImpl
 import com.alex.assignmentfor4ksoft.feature_posts.domain.repository.PostRepository
+import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddEditPostUseCases
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddPost
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.DeletePost
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.GetPost
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.GetPosts
-import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.PostUseCases
+import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.PostsUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,9 +69,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePostUseCases(repository: PostRepository): PostUseCases {
-        return PostUseCases(
+    fun providePostsUseCases(repository: PostRepository): PostsUseCases {
+        return PostsUseCases(
             getPosts = GetPosts(repository),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddEditPostUseCases(repository: PostRepository): AddEditPostUseCases {
+        return AddEditPostUseCases(
             getPost = GetPost(repository),
             addPost = AddPost(repository),
             deletePost = DeletePost(repository),

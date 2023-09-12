@@ -19,4 +19,5 @@
     <!-- Post -->
     <string name="post_list">Список всіх постів</string>
     <string name="post_comment_hint">Введіть свій коментар до посту</string>
+    <string name="save">Зберегти</string>
 </resources>
