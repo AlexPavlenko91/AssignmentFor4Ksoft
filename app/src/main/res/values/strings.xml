@@ -15,9 +15,11 @@
     <string name="error_password_blank">Пароль не може бути пустим</string>
     <string name="error_password_short">Пароль має містити щонайменше %d символів</string>
     <string name="error_saving_post">При збереженні посту виникла помилка</string>
+    <string name="error_something_went_wrong">Ууупс, щось пішло не так</string>
 
     <!-- Post -->
     <string name="post_list">Список всіх постів</string>
     <string name="post_comment_hint">Введіть свій коментар до посту</string>
     <string name="save">Зберегти</string>
+    <string name="image_content_descr">Зображення</string>
 </resources>

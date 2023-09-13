@@ -13,9 +13,9 @@ import com.alex.assignmentfor4ksoft.ui.theme.Violet
     tableName = "posts"
 )
 data class PostItem(
-    val imageUrl: String?,
+    val imageUrl: String,
     val comment: String,
-    val dateTime: Long,
+    val dateTime: Long?,
     val color: Int,
     @PrimaryKey val id: Int? = null,
 ) : DiffModel<PostItem> {

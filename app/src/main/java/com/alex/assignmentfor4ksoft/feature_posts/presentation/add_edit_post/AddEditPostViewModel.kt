@@ -1,8 +1,11 @@
 package com.alex.assignmentfor4ksoft.feature_posts.presentation.add_edit_post
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -14,8 +17,10 @@ import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddEditPostUse
 import com.alex.assignmentfor4ksoft.utils.UiEvent
 import com.alex.assignmentfor4ksoft.utils.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,13 +38,20 @@ class AddEditPostViewModel @Inject constructor(
     private val _postColor = mutableIntStateOf(PostItem.postColors.random().toArgb())
     val postColor: State<Int> = _postColor
 
+    private val _imageUrl = mutableStateOf("")
+    val imageUrl: MutableState<String> = _imageUrl
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentPostId: Int? = null
 
+    var stateImages by mutableStateOf(ImagesState())
+        private set
 
     init {
+        getImages()
+
         savedStateHandle.get<Int>("postId")?.let { postId ->
             if (postId != -1) {
                 viewModelScope.launch {
@@ -75,6 +87,11 @@ class AddEditPostViewModel @Inject constructor(
                 _postColor.intValue = event.color
             }
 
+            is AddEditPostEvent.SelectImage -> {
+                _imageUrl.value = event.value
+            }
+
+
             is AddEditPostEvent.SavePost -> {
                 viewModelScope.launch {
                     try {
@@ -83,7 +100,7 @@ class AddEditPostViewModel @Inject constructor(
                                 comment = postComment.value.text,
                                 dateTime = System.currentTimeMillis(),
                                 color = postColor.value,
-                                imageUrl = "https://picsum.photos/id/3/5000/3333",
+                                imageUrl = imageUrl.value,
                                 id = currentPostId
                             )
                         )
@@ -101,5 +118,24 @@ class AddEditPostViewModel @Inject constructor(
         }
     }
 
+    private fun getImages() {
+        viewModelScope.launch {
+            addEditPostUseCases
+                .getImages(stateImages.limit)
+                .onSuccess { loadedImages ->
+                    stateImages = stateImages.copy(
+                        images = loadedImages,
+                        isLoading = false,
+                    )
+                }
+                .onFailure {
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackbar(
+                            UiText.StringResource(R.string.error_something_went_wrong)
+                        )
+                    )
+                }
+        }
+    }
 
 }

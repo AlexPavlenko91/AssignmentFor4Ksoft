@@ -6,7 +6,8 @@ import java.util.Locale
 
 class DateTimeConverter {
     companion object{
-        fun convertLongToTime(time: Long): String {
+        fun convertLongToTime(time: Long?): String {
+            if (time == null) return ""
             val date = Date(time)
             val format = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
             return format.format(date)
