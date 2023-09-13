@@ -9,12 +9,14 @@ import com.alex.assignmentfor4ksoft.authorization.domain.use_case.ValidateEmail
 import com.alex.assignmentfor4ksoft.authorization.domain.use_case.ValidatePassword
 import com.alex.assignmentfor4ksoft.core.data.preferences.DefaultPreferencesImpl
 import com.alex.assignmentfor4ksoft.core.domain.preferences.DefaultPreferences
-import com.alex.assignmentfor4ksoft.feature_posts.data.data_source.PostDatabase
+import com.alex.assignmentfor4ksoft.feature_posts.data.data_source.local.PostDatabase
+import com.alex.assignmentfor4ksoft.feature_posts.data.data_source.remote.ImagesApi
 import com.alex.assignmentfor4ksoft.feature_posts.data.repository.PostRepositoryImpl
 import com.alex.assignmentfor4ksoft.feature_posts.domain.repository.PostRepository
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddEditPostUseCases
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddPost
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.DeletePost
+import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.GetImages
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.GetPost
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.GetPosts
 import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.PostsUseCases
@@ -22,6 +24,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -63,8 +68,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePostRepository(db: PostDatabase): PostRepository {
-        return PostRepositoryImpl(db.postDao)
+    fun providePostRepository(db: PostDatabase, api: ImagesApi): PostRepository {
+        return PostRepositoryImpl(
+            db.postDao,
+            api
+        )
     }
 
     @Provides
@@ -82,6 +90,17 @@ object AppModule {
             getPost = GetPost(repository),
             addPost = AddPost(repository),
             deletePost = DeletePost(repository),
+            getImages = GetImages(repository),
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideImagesApi(): ImagesApi {
+        return Retrofit.Builder()
+            .baseUrl(ImagesApi.BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create()
     }
 }

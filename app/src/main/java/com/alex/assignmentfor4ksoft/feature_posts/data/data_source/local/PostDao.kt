@@ -1,4 +1,4 @@
-package com.alex.assignmentfor4ksoft.feature_posts.data.data_source
+package com.alex.assignmentfor4ksoft.feature_posts.data.data_source.local
 
 import androidx.room.Dao
 import androidx.room.Delete

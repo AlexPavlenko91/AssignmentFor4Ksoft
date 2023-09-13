@@ -4,4 +4,5 @@ data class AddEditPostUseCases(
     val getPost: GetPost,
     val addPost: AddPost,
     val deletePost: DeletePost,
+    val getImages: GetImages,
 )
