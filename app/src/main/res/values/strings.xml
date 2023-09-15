@@ -16,10 +16,20 @@
     <string name="error_password_short">Пароль має містити щонайменше %d символів</string>
     <string name="error_saving_post">При збереженні посту виникла помилка</string>
     <string name="error_something_went_wrong">Ууупс, щось пішло не так</string>
+    <string name="error_empty_images_list">Список картинок пустий</string>
 
     <!-- Post -->
     <string name="post_list">Список всіх постів</string>
     <string name="post_comment_hint">Введіть свій коментар до посту</string>
+
+    <!-- Save -->
     <string name="save">Зберегти</string>
+    <string name="save_before_exit">Зберегти зміни перед виходом?</string>
+    <string name="save_title">Зберегти перед виходом?</string>
+    <string name="save_text">Збережіть зміни які ви зробили</string>
+    <string name="exit_without_saving">Вийти без збереження</string>
+
+    <!-- Image -->
     <string name="image_content_descr">Зображення</string>
+    <string name="images_blank">Зображення відсутні</string>
 </resources>

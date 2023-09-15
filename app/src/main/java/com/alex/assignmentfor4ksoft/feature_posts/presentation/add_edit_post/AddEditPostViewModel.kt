@@ -17,10 +17,8 @@ import com.alex.assignmentfor4ksoft.feature_posts.domain.use_case.AddEditPostUse
 import com.alex.assignmentfor4ksoft.utils.UiEvent
 import com.alex.assignmentfor4ksoft.utils.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -62,6 +60,7 @@ class AddEditPostViewModel @Inject constructor(
                             isHintVisible = false
                         )
                         _postColor.intValue = post.color
+                        _imageUrl.value = post.imageUrl
                     }
                 }
             }
@@ -91,7 +90,6 @@ class AddEditPostViewModel @Inject constructor(
                 _imageUrl.value = event.value
             }
 
-
             is AddEditPostEvent.SavePost -> {
                 viewModelScope.launch {
                     try {
@@ -108,8 +106,7 @@ class AddEditPostViewModel @Inject constructor(
                     } catch (e: InvalidPostException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
-                                message = e.message?.let { UiText.DynamicString(it) }
-                                    ?: UiText.StringResource(R.string.error_saving_post)
+                                message = UiText.StringResource(R.string.error_saving_post)
                             )
                         )
                     }
