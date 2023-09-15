@@ -69,9 +69,10 @@ class MainActivity : ComponentActivity() {
                             )
                         ) {
                             val color = it.arguments?.getInt("postColor") ?: -1
+
                             AddEditPostScreen(
                                 navController = navController,
-                                postColor = color
+                                postColor = color,
                             )
                         }
                     }

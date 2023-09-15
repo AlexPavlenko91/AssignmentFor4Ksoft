@@ -1,43 +1,56 @@
 package com.alex.assignmentfor4ksoft.feature_posts.presentation.add_edit_post.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
+import com.alex.assignmentfor4ksoft.R
+import com.alex.assignmentfor4ksoft.feature_posts.presentation.add_edit_post.AddEditPostEvent
+import com.alex.assignmentfor4ksoft.feature_posts.presentation.add_edit_post.AddEditPostViewModel
+import com.alex.assignmentfor4ksoft.feature_posts.presentation.add_edit_post.PostTextFieldState
+import com.alex.assignmentfor4ksoft.utils.UiText
 
 @Composable
 fun TransparentHintTextField(
-    text: String,
-    hint: String,
-    modifier: Modifier = Modifier,
-    isHintVisible: Boolean = true,
-    onValueChange: (String) -> Unit,
-    textStyle: TextStyle = TextStyle(),
-    singleLine: Boolean = false,
-    onFocusChange: (FocusState) -> Unit
+    innerPadding: PaddingValues,
+    commentState: PostTextFieldState,
+    viewModel: AddEditPostViewModel,
+    isStateChanged: MutableState<Boolean>
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(innerPadding)
     ) {
         BasicTextField(
-            value = text,
-            onValueChange = onValueChange,
-            singleLine = singleLine,
-            textStyle = textStyle,
+            value = commentState.text,
+            onValueChange = {
+                viewModel.onEvent(AddEditPostEvent.EnteredComment(it))
+                isStateChanged.value = true
+            },
+            singleLine = false,
+            textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .fillMaxWidth()
                 .onFocusChanged {
-                    onFocusChange(it)
+                    viewModel.onEvent(AddEditPostEvent.ChangeCommentFocus(it))
                 }
         )
-        if(isHintVisible) {
-            Text(text = hint, style = textStyle, color = Color.DarkGray)
+        if (commentState.isHintVisible) {
+            Text(
+                text = UiText.StringResource(R.string.post_comment_hint).asString(),
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.DarkGray
+            )
         }
     }
 }

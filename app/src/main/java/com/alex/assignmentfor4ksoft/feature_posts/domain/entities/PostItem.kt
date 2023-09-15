@@ -22,6 +22,7 @@ data class PostItem(
 
     companion object {
         val postColors = listOf(RedOrange, LightGreen, Violet, BabyBlue, RedPink)
+
     }
 
     override fun areItemsTheSame(newItem: PostItem) = this.id == newItem.id
